@@ -59,7 +59,7 @@ class move_graph:
             query = f"CREATE (n:Move {{{child_properties}}})"
             execute_query(query)
 
-            query = f"MATCH (a:Move), (b:Move) WHERE a.fen = '{self.fen}' AND b.fen = '{child.fen}' CREATE (a)-[:NEXT_MOVE{{move: \"{child.move}\"}}]->(b)"
+            query = f"MATCH (a:Move), (b:Move) WHERE a.fen = '{self.fen}' AND b.fen = '{child.fen}' CREATE UNIQUE (a)-[:NEXT_MOVE{{move: \"{child.move}\"}}]->(b)"
             execute_query(query)
 
             child.convert_to_neo4j()
