@@ -14,6 +14,7 @@ const inter = Inter({ subsets: ['latin'] })
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 const Home = () => {
+  const [lastMoveIsCorrect, setLastMoveIsCorrect] = useState<boolean | null>(null);
   const [openingName, setOpeningName] = useState<string>('London System')
   const { data, error, isLoading } = useSWR(
     `/api/openings/?opening=${openingName}`, 
@@ -25,10 +26,17 @@ const Home = () => {
     //  }
     //).then((res) => res.json())
   );
+  const [pgn, setPgn] = useState<string>('');
 
   useEffect(() => {
-    console.log(data);
+    if (data?.pgn) {
+      setPgn(data.pgn)
+    }
   }, [data])
+
+  useEffect(() => {
+    console.log(pgn);
+  }, [pgn])
 
   return (
     <>
@@ -41,8 +49,19 @@ const Home = () => {
       {/* // center the chessboard with flexbox */}
       <div className="flex w-screen h-screen justify-center items-center flex-col">
         <input type="text" value={openingName} onChange={(e) => setOpeningName(e.target.value)} />
+        {lastMoveIsCorrect === null ? null : lastMoveIsCorrect ? <p>Correct!</p> : <p>Incorrect!</p>}
         <div className="">
-          <Chessboard/>
+          <Chessboard onMove={(currentPgn: any) => {
+            console.log(pgn);
+            console.log(currentPgn);
+            if (pgn.includes(currentPgn)) {
+              console.log('correct move')
+              setLastMoveIsCorrect(true);
+            } else {
+              console.log('incorrect move')
+              setLastMoveIsCorrect(false);
+            }
+          }}/>
         </div>
       </div>
     </>

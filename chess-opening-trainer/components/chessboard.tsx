@@ -47,7 +47,7 @@ const getAvailableMoves = (moves: ch.Move[]): cg.Dests => {
 }
 
 
-const Chessboard = () => {
+const Chessboard = (props: any) => {
   const ref = useRef(null);
   const [chess, setChess] = useState<Chess>(new Chess());
   const [reloaded, setReload] = useState(false);
@@ -60,7 +60,9 @@ const Chessboard = () => {
       fen: chess.fen(),
       orientation: 'white',
       turnColor: chess.turn() === 'w' ? 'white' : 'black',
+      check: chess.inCheck(),
       lastMove: createKeyPair(history[history.length - 1]),
+      autoCastle: true,
       highlight: {
         lastMove: true,
         check: true,
@@ -74,10 +76,10 @@ const Chessboard = () => {
           after: (orig, dest) => {
             chess.move({from: orig, to: dest});
             reload();
+            props.onMove(chess.pgn());
           }
         }
       },
-
     };
 
     if (!ref.current) return;
