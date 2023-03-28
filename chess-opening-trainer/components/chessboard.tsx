@@ -89,7 +89,7 @@ const Chessboard = (props: any) => {
     }
   }, [ref.current, reloaded])
 
-  return ( <div className = " w-96 h-96" ref={ref} /> )
+  return ( <div className = "w-full h-full" ref={ref} /> )
 }
 
 export default Chessboard;

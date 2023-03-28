@@ -50,7 +50,7 @@ const Home = () => {
       <div className="flex w-screen h-screen justify-center items-center flex-col">
         <input type="text" value={openingName} onChange={(e) => setOpeningName(e.target.value)} />
         {lastMoveIsCorrect === null ? null : lastMoveIsCorrect ? <p>Correct!</p> : <p>Incorrect!</p>}
-        <div className="">
+        <div className=" grow aspect-square">
           <Chessboard onMove={(currentPgn: any) => {
             console.log(pgn);
             console.log(currentPgn);
