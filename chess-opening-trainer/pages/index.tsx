@@ -8,16 +8,22 @@ import Chessboard from '@/components/chessboard';
 
 const inter = Inter({ subsets: ['latin'] })
 
+//const fetcher = (url: string) => fetch(url, 
+//  {"body": JSON.stringify({"opening": "London System"}), "method": "GET"}
+//).then((res) => res.json())
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
+
 const Home = () => {
   const [openingName, setOpeningName] = useState<string>('London System')
   const { data, error, isLoading } = useSWR(
-    `/api/opening`, 
-    (url) => fetch(
-      url, 
-      {
-        body: JSON.stringify({"opening": openingName})
-      }
-    ).then((res) => res.json())
+    `/api/openings/?opening=${openingName}`, 
+    fetcher
+    //(url) => fetch(
+    //  url, 
+    //  {
+    //    body: JSON.stringify({"opening": openingName})
+    //  }
+    //).then((res) => res.json())
   );
 
   useEffect(() => {
@@ -33,7 +39,7 @@ const Home = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {/* // center the chessboard with flexbox */}
-      <div className="flex w-screen h-screen justify-center items-center">
+      <div className="flex w-screen h-screen justify-center items-center flex-col">
         <input type="text" value={openingName} onChange={(e) => setOpeningName(e.target.value)} />
         <div className="">
           <Chessboard/>

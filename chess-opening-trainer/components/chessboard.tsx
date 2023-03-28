@@ -4,6 +4,8 @@ import PropTypes from 'prop-types'
 import { useEffect, useRef } from 'react';
 
 import "chessground/assets/chessground.base.css";
+import "chessground/assets/chessground.brown.css";
+import "chessground/assets/chessground.cburnett.css";
 
 //import "chessground/assets/chessground.brown.css";
 //import "chessground/assets/chessground.cburnett.css";
@@ -42,7 +44,7 @@ const Chessboard = () => {
 
   }, [ref.current])
 
-  return ( <div className = "w-full h-full" ref={ref} /> )
+  return ( <div className = " w-96 h-96" ref={ref} /> )
 }
 
 export default Chessboard;

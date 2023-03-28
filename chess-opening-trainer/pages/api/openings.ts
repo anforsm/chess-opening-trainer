@@ -8,7 +8,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const opening = req.body.opening;
+  const opening = req.query.opening;
   // Connect to Neo4j
   const driver = neo4j.driver(
     "bolt://localhost:7687",
