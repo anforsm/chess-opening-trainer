@@ -1,11 +1,18 @@
 import { Chessground } from 'chessground';
+import { Config } from 'chessground/config';
+import * as cg from 'chessground/types';
+import { Chess } from 'chess.js';
+import * as ch from 'chess.js';
+
 
 import PropTypes from 'prop-types'
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import "chessground/assets/chessground.base.css";
 import "chessground/assets/chessground.brown.css";
 import "chessground/assets/chessground.cburnett.css";
+
+
 
 //import "chessground/assets/chessground.brown.css";
 //import "chessground/assets/chessground.cburnett.css";
@@ -17,32 +24,68 @@ import "chessground/assets/chessground.cburnett.css";
 //};
 let test: string = "hej"
 
-interface Config {
-  fen: string,
-  orientation: 'white' | 'black'
-  height?: number,
-  width?: number,
+const createKeyPair = (move: ch.Move): cg.KeyPair | [] => {
+  if (!move) return [];
+  const keyPair: cg.KeyPair = [
+    move.from,
+    move.to
+  ]
+  return keyPair;
 }
 
-const config: Config = {
-  fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
-  orientation: 'white',
-  height: 400,
-  width: 400,
-};
+const getAvailableMoves = (moves: ch.Move[]): cg.Dests => {
+  const dests: cg.Dests = new Map();
+  moves.forEach((move) => {
+    if (dests.has(move.from)) {
+      dests.get(move.from)?.push(move.to);
+    } else {
+      dests.set(move.from, [move.to]);
+    }
+  })
+
+  return dests;
+}
+
 
 const Chessboard = () => {
   const ref = useRef(null);
+  const [chess, setChess] = useState<Chess>(new Chess());
+  const [reloaded, setReload] = useState(false);
+  const reload = () => setReload(prev => !prev);
+
 
   useEffect(() => {
-    if (!ref.current) return;
+    const history = chess.history({verbose: true});
+    const config: Config = {
+      fen: chess.fen(),
+      orientation: 'white',
+      turnColor: chess.turn() === 'w' ? 'white' : 'black',
+      lastMove: createKeyPair(history[history.length - 1]),
+      highlight: {
+        lastMove: true,
+        check: true,
+      },
+      movable: {
+        free: false,
+        color: chess.turn() === 'w' ? 'white' : 'black',
+        showDests: true,
+        dests: getAvailableMoves(chess.moves({verbose: true})),
+        events: {
+          after: (orig, dest) => {
+            chess.move({from: orig, to: dest});
+            reload();
+          }
+        }
+      },
 
+    };
+
+    if (!ref.current) return;
     const ground = Chessground(ref.current, config);
     return () => {
       ground.destroy();
     }
-
-  }, [ref.current])
+  }, [ref.current, reloaded])
 
   return ( <div className = " w-96 h-96" ref={ref} /> )
 }
