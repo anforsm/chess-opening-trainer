@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import neo4j from 'neo4j-driver';
 
 const username = "neo4j";
-const password = "neo4j1";
+const password = process.env.DB_PASS || "neo4j1";
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,7 +11,7 @@ export default async function handler(
   const opening = req.query.opening;
   // Connect to Neo4j
   const driver = neo4j.driver(
-    "bolt://localhost:7687",
+    "neo4j+s://bad3437e.databases.neo4j.io:7687",
     neo4j.auth.basic(username, password)
   );
   const session = driver.session();
