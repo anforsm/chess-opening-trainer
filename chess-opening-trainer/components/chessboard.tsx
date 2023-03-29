@@ -69,14 +69,23 @@ const Chessboard = (props: any) => {
       },
       movable: {
         free: false,
-        color: chess.turn() === 'w' ? 'white' : 'black',
+        color: 'white',
         showDests: true,
         dests: getAvailableMoves(chess.moves({verbose: true})),
         events: {
           after: (orig, dest) => {
             chess.move({from: orig, to: dest});
             reload();
-            props.onMove(chess.pgn());
+            let history = chess.history({verbose: true});
+            props.onMove(history[history.length - 1], history);
+            if (chess.turn() === 'b' && props.getNextMove) {
+              setTimeout(() => {
+                let move: ch.Move = props.getNextMove(chess.history({verbose: true}))
+                if (!move) return;
+                chess.move(move);
+                reload();
+              }, 400)
+            }
           }
         }
       },
