@@ -3,3 +3,4 @@ __pycache__/
 logs/
 *.log
 .DS_Store
+chess-opening-trainer/next.config.js
