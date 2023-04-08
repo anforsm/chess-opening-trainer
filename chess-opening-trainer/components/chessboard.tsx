@@ -14,6 +14,7 @@ import "chessground/assets/chessground.cburnett.css";
 
 
 
+
 //import "chessground/assets/chessground.brown.css";
 //import "chessground/assets/chessground.cburnett.css";
 
@@ -51,8 +52,10 @@ const Chessboard = (props: any) => {
   const ref = useRef(null);
   const [chess, setChess] = useState<Chess>(new Chess());
   const [reloaded, setReload] = useState(false);
+  const [audio, setAudio] = useState<HTMLAudioElement>();
   const reload = () => setReload(prev => !prev);
 
+  useEffect(() => setAudio(new Audio("./move_sound_1.wav")), []);
 
   useEffect(() => {
     const history = chess.history({verbose: true});
@@ -78,12 +81,16 @@ const Chessboard = (props: any) => {
             reload();
             let history = chess.history({verbose: true});
             props.onMove(history[history.length - 1], history);
+            if (audio)
+              audio.play();
             if (chess.turn() === 'b' && props.getNextMove) {
               setTimeout(() => {
                 let move: ch.Move = props.getNextMove(chess.history({verbose: true}))
                 if (!move) return;
                 chess.move(move);
                 reload();
+                if (audio)
+                  audio.play();
               }, 400)
             }
           }
