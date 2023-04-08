@@ -6,6 +6,15 @@ import useSWR from 'swr';
 import Chessboard from '@/components/chessboard';
 import { Chess } from 'chess.js';
 import * as ch from 'chess.js';
+import { Autocomplete, TextField } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline/CssBaseline';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
+
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -21,8 +30,13 @@ const Home = () => {
   const [lastMoveIsCorrect, setLastMoveIsCorrect] = useState<boolean | null>(null);
   const [theoryOver, setTheoryOver] = useState<boolean>(false);
   const [openingName, setOpeningName] = useState<string>('London System')
+  const [showMove, setShowMove] = useState<boolean>(false);
   const { data, error, isLoading } = useSWR(
-    `/api/openings/?opening=${openingName}`, 
+    `/api/openings/?name=${openingName}`, 
+    fetcher
+  );
+  const { data: openings } = useSWR(
+    `/api/openings/?all=true`,
     fetcher
   );
   const [pgn, setPgn] = useState<string>('');
@@ -31,7 +45,12 @@ const Home = () => {
     if (data?.pgn) {
       setPgn(data.pgn)
     }
+    console.log(data);
   }, [data])
+
+  useEffect(() => {
+    console.log(openings);
+  }, [openings])
 
   useEffect(() => {
     theoryGame.loadPgn(pgn);
@@ -47,11 +66,30 @@ const Home = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {/* // center the chessboard with flexbox */}
-      <div className="flex w-screen h-screen justify-center items-center flex-col">
-        <input type="text" value={openingName} onChange={(e) => setOpeningName(e.target.value)} />
+      <div className="flex w-screen h-screen justify-center items-center flex-col bg-slate-200">
+        {/*<input type="text" value={openingName} onChange={(e) => setOpeningName(e.target.value)} />*/}
+        <input type="checkbox" checked={showMove} onChange={(e) => setShowMove(e.target.checked)} />
+        <Autocomplete
+          id="opening-name"
+          options={openings?.openings || []}
+          style={{ width: 300 }}
+          renderInput={(params: any) => <TextField {...params} label="Opening" variant="outlined" />}
+          onChange={(e, value) => {
+            if (value)
+              setOpeningName(value as string);
+          }}
+          filterOptions={(options, params) => {
+            const filtered = (options as string[]).filter(
+              (option: string) => (
+                option.toLowerCase().includes(params.inputValue.toLowerCase()))
+            );
+            return filtered.slice(0, 10);
+          }}
+        />
         {theoryOver ? <p>Opening complete</p> : lastMoveIsCorrect === null ? null : lastMoveIsCorrect ? <p>Correct!</p> : <p>Incorrect!</p>}
         <div className=" grow aspect-square">
           <Chessboard 
+            showMove={showMove}
             onMove={(currentMove: ch.Move, history: ch.Move[]) => {
               console.log(theoryHistoryRef.current);
               if (!theoryHistoryRef.current) return;

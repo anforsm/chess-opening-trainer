@@ -89,6 +89,35 @@ const Chessboard = (props: any) => {
           }
         }
       },
+      // Draw an arrow to indicate the next move
+      drawable: {
+        enabled: true,
+        visible: true,
+        eraseOnClick: true,
+        shapes: props.showMove && chess.turn() === "w" ? [
+          {
+            orig: props.getNextMove(chess.history({verbose: true}))?.from,
+            dest: props.getNextMove(chess.history({verbose: true}))?.to,
+            brush: 'purple',
+          },
+        ] : [],
+        brushes: {
+          green: { key: 'g', color: '#15781B', opacity: 1, lineWidth: 10 },
+          red: { key: 'r', color: '#882020', opacity: 1, lineWidth: 10 },
+          blue: { key: 'b', color: '#003088', opacity: 1, lineWidth: 10 },
+          yellow: { key: 'y', color: '#e68f00', opacity: 1, lineWidth: 10 },
+          purple: { key: 'p', color: '#800080', opacity: 1, lineWidth: 10 },
+          paleBlue: { key: 'pb', color: '#003088', opacity: 0.4, lineWidth: 15 },
+          paleGreen: { key: 'pg', color: '#15781B', opacity: 0.4, lineWidth: 15 },
+          paleRed: { key: 'pr', color: '#882020', opacity: 0.4, lineWidth: 15 },
+          paleGrey: { key: 'pgr', color: '#4a4a4a', opacity: 0.35, lineWidth: 15 },
+          grey: { key: 'gr', color: '#4a4a4a', opacity: 1, lineWidth: 10 },
+          paleBrown: { key: 'pbr', color: '#855f42', opacity: 0.4, lineWidth: 15 },
+          brown: { key: 'br', color: '#855f42', opacity: 1, lineWidth: 10 },
+          white: { key: 'w', color: '#fff', opacity: 1, lineWidth: 10 },
+          black: { key: 'bl', color: '#000', opacity: 1, lineWidth: 10 },
+        }
+      },
     };
 
     if (!ref.current) return;
@@ -96,7 +125,7 @@ const Chessboard = (props: any) => {
     return () => {
       ground.destroy();
     }
-  }, [ref.current, reloaded])
+  }, [ref.current, reloaded, props.showMove])
 
   return ( <div className = "w-full h-full" ref={ref} /> )
 }
